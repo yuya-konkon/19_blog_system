@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->bindParam(':email', $email);
     $stmt->bindParam(':name', $name);
     $pw_hash = password_hash($password, PASSWORD_DEFAULT);
-    $stmt->bindParam(':password', $password);
+    $stmt->bindParam(':password', $pw_hash);
     $stmt->execute();
 
     header('Location: sign_in.php');
