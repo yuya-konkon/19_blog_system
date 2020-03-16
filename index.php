@@ -21,7 +21,7 @@ session_start();
 
 <body>
   <div class="flex-col-area">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-3">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-5">
       <a href="http://localhost/19_blog_system/index.php" class="navbar-brand">Camp Blog</a>
       <div class="collapse navbar-collapse" id="navbarToggle">
         <ul class="navbar-nav ml-auto mt-2 mt-lg-0">

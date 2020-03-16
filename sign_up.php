@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $dbh = connectDB();
   $sql = "select * from users where email = :email";
   $stmt = $dbh->prepare($sql);
-  $stmt->bindParam(":email", $email);
+  $stmt->bindParam(":email", $email, PDO::PARAM_STR);
   $stmt->execute();
   $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -34,13 +34,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $errors[] = 'すでにメールアドレスが登録されています';
   }
 
-  if(empty($errors)) {
+  if (empty($errors)) {
     $sql = "insert into users (email, name, password, created_at, updated_at) values (:email, :name, :password, now(), now())";
     $stmt = $dbh->prepare($sql);
-    $stmt->bindParam(':email', $email);
-    $stmt->bindParam(':name', $name);
+    $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+    $stmt->bindParam(':name', $name, PDO::PARAM_STR);
     $pw_hash = password_hash($password, PASSWORD_DEFAULT);
-    $stmt->bindParam(':password', $pw_hash);
+    $stmt->bindParam(':password', $pw_hash, PDO::PARAM_STR);
     $stmt->execute();
 
     header('Location: sign_in.php');
@@ -66,8 +66,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <body>
   <div class="flex-col-area">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-3">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-5">
       <a href="http://localhost/19_blog_system/index.php" class="navbar-brand">Camp Blog</a>
+      <div class="collapse navbar-collapse" id="navbarToggle">
+        <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+          <?php if ($_SESSION['id']) : ?>
+            <li class="nav-item">
+              <a href="sign_out.php" class="nav-link">ログアウト</a>
+            </li>
+            <li class="nav-item">
+              <a href="new.php" class="nav-link">New Post</a>
+            </li>
+          <?php else : ?>
+            <li class="nav-item">
+              <a href="sign_in.php" class="nav-link">ログイン</a>
+            </li>
+            <li class="nav-item">
+              <a href="sign_up.php" class="nav-link">アカウント登録</a>
+            </li>
+          <?php endif; ?>
+        </ul>
+      </div>
     </nav>
 
     <div class="container">
@@ -76,9 +95,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           <div class="card card-signin my-5 bg-light">
             <div class="card-body">
               <h5 class="card-title text-center">アカウント登録</h5>
-              <?php if ($errors) :?>
+              <?php if ($errors) : ?>
                 <ul class="alert alert-danger">
-                  <?php foreach ($errors as $error) :?>
+                  <?php foreach ($errors as $error) : ?>
                     <li><?php echo $error; ?></li>
                   <?php endforeach; ?>
                 </ul>
