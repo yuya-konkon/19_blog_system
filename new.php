@@ -12,6 +12,38 @@ $stmt->execute();
 
 $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $title = $_POST['title'];
+  $category_id = $_POST['category_id'];
+  $body  = $_POST['body'];
+  $user_id = $_SESSION['id'];
+
+  $errors = [];
+
+  if ($title == '') {
+    $errors = 'タイトルが未入力です。';
+  }
+
+  if ($category_id == '') {
+    $errors = 'カテゴリーが未選択です。';
+  }
+
+  if ($body == '') {
+    $errors = '本文が未入力です。';
+  }
+
+  if (empty($errors)) {
+    $sql = "insert into posts (title, body, category_id, user_id, created_at, updated_at) values (:title, :body, :category_id, :user_id, now(), now())";
+    $stmt = $dbh->prepare($sql);
+
+    $stmt->bindParam(':title', $title, PDO::PARAM_STR);
+    $stmt->bindParam(':body', $body, PDO::PARAM_STR);
+    $stmt->bindParam(':category_id', $category_id, PDO::PARAM_STR);
+    $stmt->bindParam(':user_id', $user_id, PDO::PARAM_STR);
+    $stmt->execute();
+  }
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -68,7 +100,7 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
                   <select name="category_id" class="form-control" required>
                     <option value="" disabled selected>選択してください。</option>
                     <?php foreach ($categories as $c) : ?>
-                      <option value="<?php echo h($c['id'])?>"><?php echo h($c['name']) ; ?></option>
+                      <option value="<?php echo h($c['id']) ?>"><?php echo h($c['name']); ?></option>
                     <?php endforeach; ?>
                   </select>
                 </div>
