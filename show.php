@@ -55,6 +55,7 @@ if (empty($post)) {
 </head>
 
 <body>
+  <!-- header -->
   <div class="flex-col-area">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-5">
       <a href="http://localhost/19_blog_system/index.php" class="navbar-brand">Camp Blog</a>
