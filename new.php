@@ -41,6 +41,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bindParam(':category_id', $category_id, PDO::PARAM_STR);
     $stmt->bindParam(':user_id', $user_id, PDO::PARAM_STR);
     $stmt->execute();
+
+    $id =$dbh->lastInsertId();
+    header("Location: show.php?id={$id}");
+    exit;
   }
 }
 
@@ -118,6 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
     </div>
 
+    <!-- footer -->
     <footer class="footer font-small bg-dark">
       <div class="footer-copyright text-center py-3 text-light">&copy; 2020 Camp Blog</div>
     </footer>
