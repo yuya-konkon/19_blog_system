@@ -6,44 +6,11 @@ require_once('functions.php');
 session_start();
 $dbh = connectDb();
 
+$sql = "select * from categories";
+$stmt = $dbh->prepare($sql);
+$stmt->execute();
 
-if ($_SESSION['id']) {
-  header('Location: index.php');
-  exit;
-}
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  $email = $_POST['email'];
-  $password = $_POST['password'];
-
-  $errors = [];
-
-  if ($email == '') {
-    $errors[] = 'emailが未入力です';
-  }
-
-  if ($password == '') {
-    $errors[] = 'passwordが未入力です';
-  }
-
-  if (empty($errors)) {
-
-    $sql = "select * from users where email = :email";
-    $stmt = $dbh->prepare($sql);
-    $stmt->bindParam(":email", $email, PDO::PARAM_STR);
-    $stmt->execute();
-
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if (password_verify($password, $user['password'])) {
-      $_SESSION['id'] = $user['id'];
-      header('Location: index.php');
-      exit;
-    } else {
-      $errors[] = 'メールアドレスかパスワードが間違っています';
-    }
-  }
-}
+$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 <!DOCTYPE html>
@@ -64,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <div class="flex-col-area">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-5">
       <a href="http://localhost/19_blog_system/index.php" class="navbar-brand">Camp Blog</a>
-      <div class="collapse navbar-collapse" id="navbarToggle">
+      <div class="collapse navbar-collapse" id="navbarToggler">
         <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
           <?php if ($_SESSION['id']) : ?>
             <li class="nav-item">
@@ -84,32 +51,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </ul>
       </div>
     </nav>
+
     <div class="container">
       <div class="row">
-        <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
-          <div class="card my-5">
+        <div class="col-sm-11 col-md-9 col-lg-7 mx-auto">
+          <div class="card my-5 bg-light">
             <div class="card-body">
-              <h5 class="card-title text-center">ログイン</h5>
-              <?php if ($errors) : ?>
-                <ul class="alert alert-danger">
-                  <?php foreach ($errors as $error) : ?>
-                    <li><?php echo $error; ?></li>
-                  <?php endforeach; ?>
-                </ul>
-              <?php endif; ?>
-              <form class="" action="sign_in.php" method="post">
+              <h5 class="card-title text-center">新規記事</h5>
+              <form action="new.php" method="post">
                 <div class="form-group">
-                  <label for="email">メールアドレス</label>
-                  <input type="email" class="form-control" required autofocus name="email">
+                  <label for="title">タイトル</label>
+                  <input type="text" class="form-control" required autofocus name="title">
+                </div>
+                <div class="form-gruop">
+                  <label for="category_id">カテゴリー</label>
+                  <select name="category_id" class="form-control" required>
+                    <option value="" disabled selected>選択してください。</option>
+                    <?php foreach ($categories as $c) : ?>
+                      <option value="<?php echo h($c['id'])?>"><?php echo h($c['name']) ; ?></option>
+                    <?php endforeach; ?>
+                  </select>
                 </div>
                 <div class="form-group">
-                  <label for="password">パスワード</label>
-                  <input type="password" class="form-control" required name="password">
+                  <label for="body">本文</label>
+                  <textarea name="body" id="" cols="30" rows="10" class="form-control" required></textarea>
                 </div>
                 <div class="form-group">
-                  <input type="submit" value="ログイン" class="btn btn-lg btn-primary btn-block ">
+                  <input type="submit" value="登録" class="btn btn-lg btn-primary btn-block ">
                 </div>
-                <a href="sign_up.php" class="btn btn-lg btn-success btn-block mt-2">アカウント登録</a>
               </form>
             </div>
           </div>
