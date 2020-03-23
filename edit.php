@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bindParam(':category_id', $category_id, PDO::PARAM_STR);
     $stmt->bindParam(':id', $id, PDO::PARAM_INT);
     $stmt->execute();
-    
+
     header("Location: show.php?id={$id}");
     exit;
   }
@@ -125,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <div class="card my-5 bg-light">
             <div class="card-body">
               <h5 class="card-title text-center">記事編集</h5>
-              <form action="new.php" method="post">
+              <form action="edit.php" method="post">
                 <div class="form-group">
                   <label for="title">タイトル</label>
                   <input type="text" class="form-control" required value="<?php echo h($post['title']); ?>" autofocus name="title">
