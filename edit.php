@@ -4,7 +4,26 @@ require_once('config.php');
 require_once('functions.php');
 
 session_start();
+$id = $_GET['id'];
+
+if (!is_numeric($id)) {
+  header('Location: index.php');
+  exit;
+}
+
 $dbh = connectDb();
+
+$sql = "select * from posts where id = :id";
+$stmt = $dbh->prepare($sql);
+$stmt->bindParam(':id', $id, PDO::PARAM_INT);
+$stmt->execute();
+
+$post = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (empty($post)) {
+  header('Location: index.php');
+  exit;
+}
 
 $sql = "select * from categories";
 $stmt = $dbh->prepare($sql);
@@ -16,7 +35,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $title = $_POST['title'];
   $category_id = $_POST['category_id'];
   $body  = $_POST['body'];
-  $user_id = $_SESSION['id'];
 
   $errors = [];
 
@@ -33,22 +51,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 
   if (empty($errors)) {
-    $sql = "insert into posts (title, body, category_id, user_id, created_at, updated_at) values (:title, :body, :category_id, :user_id, now(), now())";
+    $sql = <<<SQL
+    update
+      posts
+    set
+      title = :title,
+      body = :body,
+      category_id = category_id
+    where
+      id = :id
+    SQL;
+
     $stmt = $dbh->prepare($sql);
 
     $stmt->bindParam(':title', $title, PDO::PARAM_STR);
     $stmt->bindParam(':body', $body, PDO::PARAM_STR);
     $stmt->bindParam(':category_id', $category_id, PDO::PARAM_STR);
-    $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
     $stmt->execute();
-
-    $id =$dbh->lastInsertId();
+    
     header("Location: show.php?id={$id}");
     exit;
   }
 }
 
+
 ?>
+
 <!DOCTYPE html>
 <html lang="ja">
 
@@ -95,29 +124,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="col-sm-11 col-md-9 col-lg-7 mx-auto">
           <div class="card my-5 bg-light">
             <div class="card-body">
-              <h5 class="card-title text-center">新規記事</h5>
+              <h5 class="card-title text-center">記事編集</h5>
               <form action="new.php" method="post">
                 <div class="form-group">
                   <label for="title">タイトル</label>
-                  <input type="text" class="form-control" required autofocus name="title">
+                  <input type="text" class="form-control" required value="<?php echo h($post['title']); ?>" autofocus name="title">
                 </div>
                 <div class="form-gruop">
                   <label for="category_id">カテゴリー</label>
                   <select name="category_id" class="form-control" required>
-                    <option value="" disabled selected>選択してください。</option>
+                    <option value="" disabled>選択してください。</option>
                     <?php foreach ($categories as $c) : ?>
-                      <option value="<?php echo h($c['id']) ?>"><?php echo h($c['name']); ?></option>
+                      <!-- 三項演算子 -->
+                      <option value="<?php echo h($c['id']); ?>" <?php echo $post['category_id'] == $c['id'] ? 'selected' : "" ?>>
+                        <?php echo h($c['name']); ?>
+                      </option>
                     <?php endforeach; ?>
                   </select>
                 </div>
                 <div class="form-group">
-                  <label for="body">本文</label>
-                  <textarea name="body" id="" cols="30" rows="10" class="form-control" required></textarea>
+                  <label for="body">本文</label><textarea name="body" id="" cols="30" rows="10" class="form-control" required><?php echo $post['body']; ?></textarea>
                 </div>
                 <div class="form-group">
-                  <input type="submit" value="登録" class="btn btn-lg btn-primary btn-block ">
+                  <input type="submit" value="更新" class="btn btn-lg btn-primary btn-block ">
                 </div>
               </form>
+              <a href="show.php?id=<?php echo h($post['id']); ?>" class="btn btn-info btn-block btn-lg">戻る</a>
             </div>
           </div>
         </div>

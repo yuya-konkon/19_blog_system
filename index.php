@@ -5,7 +5,7 @@ require_once('functions.php');
 
 session_start();
 
-$dbh = connectDB();
+$dbh = connectDb();
 
 $sql = <<<SQL
 select
@@ -73,16 +73,19 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="container">
       <div class="row">
         <div class="col-sm-11 col-md-10 col-lg-9 mx-auto">
-          <?php foreach ($posts as $post) : ?>
-            <div class="article">
-              <h2>タイトル : <?php echo h($post['title']); ?></h2>
-              <p>著者 : <?php echo h($post['user_name']); ?></p>
-              <p>作成日 : <?php echo h($post['crated_at']); ?></p>
-              <p> <?php echo nl2br(h(mb_strimwidth($post['body'], 0, 50, "..."))); ?></p>
-              <a href="show.php?id=<?php echo h($post['id']); ?>" class="btn btn-info">続きを読む</a>
-            </div>
-            <hr>
-          <?php endforeach; ?>
+          <div class="row">
+            <?php foreach ($posts as $post) : ?>
+              <div class="col-md-6">
+                <div class="article">
+                  <h3 class="blog-title"><a href="show.php?id=<?php echo h($post['id']); ?>"><?php echo h($post['title']); ?></a></h3>
+                  <p>著者 : <?php echo h($post['user_name']); ?></p>
+                  <p>作成日 : <?php echo h($post['crated_at']); ?></p>
+                  <p> <?php echo nl2br(h(mb_strimwidth($post['body'], 0, 50, "..."))) ?></p>
+                </div>
+                <hr>
+              </div>
+              <?php endforeach; ?>
+          </div>
         </div>
       </div>
     </div>

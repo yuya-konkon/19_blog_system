@@ -15,3 +15,12 @@
 .alert-danger li {
   list-style: none;
 }
+
+/* index */
+.blog-title {
+  font-size: 22px;
+}
+
+.blog-title > a {
+  color: rgb(127, 160, 185);
+}
