@@ -4,7 +4,7 @@ require_once('config.php');
 require_once('functions.php');
 
 session_start();
-$id = $_GET['id'];
+$id = $_REQUEST['id'];
 
 if (!is_numeric($id)) {
   header('Location: index.php');
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     set
       title = :title,
       body = :body,
-      category_id = category_id
+      category_id = :category_id
     where
       id = :id
     SQL;
@@ -145,6 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-group">
                   <label for="body">本文</label><textarea name="body" id="" cols="30" rows="10" class="form-control" required><?php echo $post['body']; ?></textarea>
                 </div>
+                <input type="hidden" name="id" value="<?php echo h($post['id']); ?>">
                 <div class="form-group">
                   <input type="submit" value="更新" class="btn btn-lg btn-primary btn-block ">
                 </div>
