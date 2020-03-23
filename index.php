@@ -20,13 +20,32 @@ on p.category_id = c.id
 left join
   users u
 on p.user_id = u.id
-order by
-  created_at desc
 SQL;
 
+if (isset($_GET['category_id']) && is_numeric($_GET['category_id'])) {
+  $category_id = $_GET['category_id'];
+  $sql_where = " where p.category_id = :category_id";
+} else {
+  $sql_where = "";
+}
+
+$sql_ordr = " order by p.created_at desc";
+
+// SQL結合
+$sql = $sql . $sql_where . $sql_ordr;
+
 $stmt = $dbh->prepare($sql);
+if ($category_id) {
+  $stmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
+}
 $stmt->execute();
 $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$sql = "select id, name from categories order by id";
+$stmt = $dbh->prepare($sql);
+$stmt->execute();
+$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 
 <!DOCTYPE html>
@@ -72,7 +91,7 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <!-- main -->
     <div class="container">
       <div class="row">
-        <div class="col-sm-11 col-md-10 col-lg-9 mx-auto">
+        <div class="col-md-8">
           <div class="row">
             <?php foreach ($posts as $post) : ?>
               <div class="col-md-6">
@@ -87,8 +106,22 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <?php endforeach; ?>
           </div>
         </div>
+        <!-- subbar -->
+        <div class="col-md-4">
+          <h2 class="blog-heading">カテゴリー</h2>
+          <ul class="category-list clearfix">
+            <?php foreach ($categories as $c) : ?>
+              <li class="category">
+                <a href="index.php?category_id=<?php echo h($c['id']); ?>">
+                  <?php echo h($c['name']); ?>
+                </a>
+              </li>
+            <?php endforeach; ?>
+          </ul>
+        </div>
       </div>
     </div>
+
     <!-- footer -->
     <footer class="footer font-small bg-dark">
       <div class="footer-copyright text-center py-3 text-light">&copy; 2020 Camp Blog</div>
