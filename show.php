@@ -91,9 +91,10 @@ if (empty($post)) {
             <?php echo nl2br(h($post['body'])); ?>
           </p>
           <!-- edit.phpにidをパラメーターとして渡す -->
-          <?php if (($_SESSION['id']) && ($_SESSION['id'] == $post['user_id'])): ?>
+          <?php if (($_SESSION['id']) && ($_SESSION['id'] == $post['user_id'])) : ?>
             <a href="edit.php?id=<?php echo h($post['id']); ?>" class="btn btn-secondary">編集</a>
-          <?php endif ; ?>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#post-delete">削除</button>
+          <?php endif; ?>
           <!-- index.phpに戻る -->
           <a href="index.php" class="btn btn-info">戻る</a>
         </div>
@@ -104,6 +105,28 @@ if (empty($post)) {
       <div class="footer-copyright text-center py-3 text-light">&copy; 2020 Camp Blog</div>
     </footer>
   </div>
+  <div class="modal fade" id="post-delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">
+            「<?php echo h($post['title']); ?>」の記事を削除しますか？
+          </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p><?php echo nl2br(h($post['body'])); ?></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
+          <a href="delete.php?id=<?php echo h($post['id']); ?>" class="btn btn-warning">削除</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
 </body>
 
 </html>
