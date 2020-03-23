@@ -79,12 +79,12 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="article">
                   <h3 class="blog-title"><a href="show.php?id=<?php echo h($post['id']); ?>"><?php echo h($post['title']); ?></a></h3>
                   <p>著者 : <?php echo h($post['user_name']); ?></p>
-                  <p>作成日 : <?php echo h($post['crated_at']); ?></p>
+                  <p>作成日:<?php echo h($post['created_at']); ?></p>
                   <p> <?php echo nl2br(h(mb_strimwidth($post['body'], 0, 50, "..."))) ?></p>
                 </div>
                 <hr>
               </div>
-              <?php endforeach; ?>
+            <?php endforeach; ?>
           </div>
         </div>
       </div>
