@@ -1,38 +1,20 @@
 <?php
 
-require_once('config.php');
 require_once('functions.php');
+require_once('posts.php');
 
 session_start();
 
 $id = $_GET['id'];
-
+// idChkとかにして省略とか
 if (!is_numeric($id)) {
   header('Location: index.php');
   exit;
 }
 
-$dbh = connectDB();
-// ヒアドキュメント <<<でSQLと同じ文字出てくるまで1つなぎとする
-$sql = <<<SQL
-select
-  p.*,
-  c.name
-from
-  posts p
-left join
-  categories c
-on
-  p.category_id = c.id
-where
-  p.id = :id
-SQL;
 
-$stmt = $dbh->prepare($sql);
-$stmt->bindParam(':id', $id, PDO::PARAM_INT);
-$stmt->execute();
-
-$post = $stmt->fetch(PDO::FETCH_ASSOC);
+$post = getPostFindById($id);
+// postChkとかにして省略とか
 if (empty($post)) {
   header('Location: index.php');
   exit;

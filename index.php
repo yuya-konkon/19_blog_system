@@ -11,7 +11,7 @@ session_start();
 $posts = getPostsFindByCategoryId($_GET['category_id']);
 
 // カテゴリーデータの取得
-$categories = getAllCategoreis();
+$categories = getAllcategories();
 
 ?>
 

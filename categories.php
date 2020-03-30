@@ -2,7 +2,7 @@
 
 require_once('config.php');
 
-function getAllCategoreis()
+function getAllcategories()
 {
   $dbh = connectDb();
 
